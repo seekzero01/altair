@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-debugger": "error",
+    "typescript/no-explicit-any": "error"
+  },
+  "env": {
+    "node": true
+  },
+  "settings": {
+    "next": {
+      "rootDir": "apps/web/"
+    }
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "**/.turbo/**",
+    ".pnpm-store/**",
+    "**/next-env.d.ts"
+  ],
+  "overrides": [
+    {
+      "files": ["apps/web/**/*.{js,jsx,ts,tsx}"],
+      "plugins": ["typescript", "unicorn", "oxc", "react", "nextjs", "jsx-a11y"],
+      "env": {
+        "browser": true
+      },
+      "rules": {
+        "react/rules-of-hooks": "error",
+        "react/exhaustive-deps": "error",
+        "nextjs/no-img-element": "error",
+        "jsx-a11y/alt-text": "error"
+      }
+    }
+  ]
+}

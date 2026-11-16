@@ -3,15 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        "!.next/dev/**",
-        "dist/**"
-      ]
-    },
-    "lint": {
-      "dependsOn": ["^lint"]
+      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**", "dist/**"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
@@ -23,6 +15,15 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "//#format": {},
+    "//#format:fix": {
+      "dependsOn": ["//#lint:fix"],
+      "cache": false
+    },
+    "//#lint": {},
+    "//#lint:fix": {
+      "cache": false
     }
   }
 }

@@ -1,3 +1,10 @@
 .turbo
 .idea
 node_modules
+.pnpm-store
+.next
+dist
+coverage
+*.tsbuildinfo
+.env*
+!.env.example
