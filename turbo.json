@@ -2,27 +2,42 @@
   "$schema": "https://turborepo.dev/schema.json",
   "tasks": {
     "build": {
+      "description": "Builds applications and packages for production by compiling TypeScript and generating optimized output artifacts. Builds dependent workspace packages first.",
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**", "dist/**"],
+      "env": ["API_URL"]
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "description": "Performs static TypeScript type checking without emitting compiled files. Checks dependent workspace packages first to ensure type consistency across the monorepo.",
+      "dependsOn": ["^typecheck"],
+      "outputs": [".next/types/**", "**/*.tsbuildinfo"]
     },
     "test": {
+      "description": "Runs automated tests with code coverage reporting to verify application behavior and prevent regressions. Builds dependent workspace packages before executing tests.",
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"]
     },
     "dev": {
+      "description": "Starts the application or package in development mode with live reload or file watching. Runs as a persistent process and disables caching because development servers are long-running.",
       "cache": false,
       "persistent": true
     },
-    "//#format": {},
+    "//#format": {
+      "description": "Checks formatting across the monorepo using Oxfmt without modifying files. Reports formatting violations that must be resolved before merging changes."
+    },
     "//#format:fix": {
+      "description": "Automatically formats source files across the monorepo using Oxfmt. Runs the lint autofix task first and disables caching because it modifies files.",
       "dependsOn": ["//#lint:fix"],
       "cache": false
     },
-    "//#lint": {},
+    "//#lint": {
+      "description": "Performs static code analysis across the monorepo using Oxlint to detect potential bugs, suspicious patterns, and violations of configured linting rules without modifying files."
+    },
     "//#lint:fix": {
+      "description": "Automatically fixes supported linting violations across the monorepo using Oxlint. Reports remaining issues that require manual intervention and disables caching because it modifies files.",
+      "cache": false
+    },
+    "test:integration": {
       "cache": false
     }
   }

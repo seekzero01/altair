@@ -5,12 +5,15 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "oxlint --max-warnings 0 .",
+    "lint": "oxlint --disable-nested-config --max-warnings 0 .",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "lint:fix": "oxlint --fix --max-warnings 0 .",
+    "lint:fix": "oxlint --disable-nested-config --fix --max-warnings 0 .",
     "format": "oxfmt --check .",
-    "format:fix": "oxfmt --write ."
+    "format:fix": "oxfmt --write .",
+    "test:integration": "turbo run test:integration",
+    "audit": "pnpm audit",
+    "verify": "turbo run lint format typecheck test test:integration build"
   },
   "devDependencies": {
     "turbo": "^2.11.10",
@@ -22,10 +25,10 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "11.9.0"
+      "version": "11.11.0"
     }
   },
-  "packageManager": "pnpm@11.9.0",
+  "packageManager": "pnpm@11.11.0",
   "engines": {
     "node": ">=24 <25"
   }

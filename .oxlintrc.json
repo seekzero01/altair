@@ -1,8 +1,14 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "oxc"],
+  "plugins": ["typescript", "unicorn", "oxc", "react", "nextjs", "jsx-a11y", "import"],
   "categories": {
-    "correctness": "error"
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "off",
+    "perf": "warn",
+    "style": "off",
+    "restriction": "off",
+    "nursery": "off"
   },
   "rules": {
     "no-debugger": "error",
@@ -36,7 +42,25 @@
         "react/rules-of-hooks": "error",
         "react/exhaustive-deps": "error",
         "nextjs/no-img-element": "error",
-        "jsx-a11y/alt-text": "error"
+        "jsx-a11y/alt-text": "error",
+        "react/react-in-jsx-scope": "off",
+        "import/no-unassigned-import": [
+          "warn",
+          {
+            "allow": ["**/*.css"]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["apps/api/**/*.ts"],
+      "rules": {
+        "typescript/no-extraneous-class": [
+          "warn",
+          {
+            "allowWithDecorator": true
+          }
+        ]
       }
     }
   ]

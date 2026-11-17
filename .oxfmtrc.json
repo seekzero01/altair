@@ -3,10 +3,12 @@
   "tabWidth": 2,
   "useTabs": false,
   "printWidth": 100,
-  "singleQuote": true,
+  "singleQuote": false,
   "semi": true,
   "endOfLine": "lf",
   "sortPackageJson": false,
+  "trailingComma": "all",
+  "arrowParens": "always",
   "ignorePatterns": [
     "**/node_modules/**",
     "**/.next/**",

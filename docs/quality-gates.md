@@ -1,37 +1,53 @@
 # Quality gates
 
-Run `pnpm lint` to check the repository with Oxlint.
-Run `pnpm lint:fix` to apply safe fixes and report remaining violations.
-Run `pnpm exec turbo run lint` to use Turbo's root-task cache.
+Use Node.js 24 and the pnpm version pinned in the root `packageManager` field.
 
-Correctness rules, debugger statements, and explicit `any` types are errors.
-Web files additionally enable React Hooks, Next.js, and accessibility rules.
-Generated output and Next.js declaration files are ignored.
+| Component             | Command                          | Scope                                                                  |
+| --------------------- | -------------------------------- | ---------------------------------------------------------------------- |
+| Dependency validation | `pnpm install --frozen-lockfile` | All workspaces; fails on manifest/lockfile drift                       |
+| Lint                  | `pnpm lint`                      | Repository-wide Oxlint, zero warnings allowed                          |
+| Formatting            | `pnpm format`                    | Repository-wide Oxfmt check                                            |
+| Type checking         | `pnpm typecheck`                 | API and web; `tsc --noEmit`                                            |
+| Unit tests            | `pnpm test`                      | API controller/service and web page tests, with V8 coverage            |
+| Integration tests     | `pnpm test:integration`          | API HTTP route, controller, service, and module wiring                 |
+| Build                 | `pnpm build`                     | NestJS and Next.js production builds                                   |
+| Security              | `pnpm audit`                     | Production, development, and package-manager dependencies              |
+| Task orchestration    | `pnpm verify`                    | Turbo runs lint, format, typecheck, unit/integration tests, and builds |
 
-The built-in Next.js rules are Oxlint implementations, not eslint-config-next.
-Compiler diagnostics remain the responsibility of `pnpm typecheck`;
-type-aware linting is not enabled.
+Dependency validation and auditing run separately from `pnpm verify`.
+An audit finding fails the security gate; there are no advisory exemptions.
 
-The CI lint job runs `pnpm lint` and `pnpm format`. All CI jobs select pnpm
-from the repository's `packageManager` field to keep local and CI versions aligned.
+Oxlint disables nested configuration discovery so dependency template configs
+cannot bypass root exclusions. Correctness violations, debugger statements,
+and explicit `any` types are errors. Web overrides support the automatic JSX
+runtime, CSS side-effect imports, Hooks, Next.js, and accessibility checks.
+API overrides permit empty decorated NestJS module classes.
+Type-aware linting is not enabled; compiler checks run separately.
 
-Run `pnpm format` to check formatting without changing files.
-Run `pnpm format:fix` to write formatting changes.
-Run `pnpm exec turbo run format` to use Turbo's root-task cache.
+Oxfmt uses two-space indentation, double quotes, semicolons, and LF endings.
+Package field order is preserved. Generated output, the lockfile, and agent
+instruction files are excluded. `pnpm lint:fix` and `pnpm format:fix` modify
+files. Turbo fix tasks are uncached, with formatting after lint fixes.
 
-Oxfmt uses two-space indentation, single quotes, semicolons, and LF endings.
-Import sorting is disabled; package.json field order is preserved.
-Generated files, pnpm's lockfile, and agent instruction files are excluded.
+Applications use their package-local TypeScript versions and strict configs.
+Use `pnpm --filter web typecheck` or `pnpm --filter api typecheck` for one app.
+The web task generates Next.js route types before checking.
+The shared TypeScript config package is available but is not yet inherited.
 
-The Turbo `format:fix` task is uncached and runs after `lint:fix` to avoid
-concurrent edits. Direct `pnpm format:fix` only formats files.
+Unit coverage requires at least 80% statements, branches, functions, and lines.
+API coverage includes service business logic; controller behavior is verified
+by unit and HTTP integration tests. Web coverage currently includes the starter
+page. Expand coverage includes as new business modules and components are added.
+Integration tests mock external telemetry and close the HTTP application.
 
-Run `pnpm typecheck` to check all applications with TypeScript 7.0.2.
-Use `pnpm --filter @altair/web typecheck` (or `@altair/api`, `@altair/worker`)
-for a single application.
+Turbo caches lint, formatting, typechecks, unit coverage, and build artifacts.
+Integration tests always execute. `API_URL` participates in the build cache key.
+CI supplies a non-secret localhost `API_URL` for rewrite validation.
+The Next.js build downloads Google Fonts and requires network access; Tailwind
+processing also requires permission to create a local IPC listener.
 
-All applications inherit strict settings from `packages/typescript-config`.
-Type checking uses the released native `typescript` compiler through `tsc --noEmit`.
-The web task generates Next.js route types before checking; Turbo caches those
-types and the incremental compiler state. Dependency typecheck tasks run first,
-so changes to shared packages invalidate consuming applications.
+GitHub Actions runs every gate on pushes and pull requests. The aggregate
+`Quality Gates` job fails if any prerequisite fails or is skipped. Configure
+this check as required in the target branch's GitHub ruleset or branch
+protection settings to block merges. Workflow files alone do not enforce
+branch protection; remote CI execution must be verified after pushing.

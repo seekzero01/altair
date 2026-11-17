@@ -60,3 +60,51 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+
+  integration:
+    name: Integration testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:integration
+
+  security:
+    name: Security audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm audit
+
+  quality:
+    name: Quality Gates
+    if: always()
+    needs: [lint, typecheck, test, build, integration, security]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all quality gates
+        env:
+          LINT: ${{ needs.lint.result }}
+          TYPECHECK: ${{ needs.typecheck.result }}
+          TEST: ${{ needs.test.result }}
+          BUILD: ${{ needs.build.result }}
+          INTEGRATION: ${{ needs.integration.result }}
+          SECURITY: ${{ needs.security.result }}
+        run: |
+          for gate in LINT TYPECHECK TEST BUILD INTEGRATION SECURITY; do
+            echo "$gate: ${!gate}"
+            if [[ "${!gate}" != "success" ]]; then
+              exit 1
+            fi
+          done

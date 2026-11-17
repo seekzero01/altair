@@ -1,5 +1,8 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - "apps/*"
+  - "packages/*"
 allowBuilds:
-  '@parcel/watcher': set this to true or false
+  "@parcel/watcher": false
+overrides:
+  "@nestjs/mau>undici": "^6.29.1"
+  "external-editor>tmp": "^0.2.6"
