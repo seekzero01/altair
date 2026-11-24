@@ -60,6 +60,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+        env:
+          API_URL: http://localhost:3001
 
   integration:
     name: Integration testing
